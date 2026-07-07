@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: erpdb
+      POSTGRES_USER: erp
+      POSTGRES_PASSWORD: erp123
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d
+
+  auth-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: erpdb
+      DB_USER: erp
+      DB_PASSWORD: erp123
+      AUTH_PUBLIC_BASE_URL: http://localhost:9000
+      APP_PUBLIC_BASE_URL: http://localhost:8080/erp-web-war
+      OAUTH_CLIENT_ID: erp-web-client
+      OAUTH_CLIENT_SECRET: erp-web-secret
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+
+  erp-platform:
+    build:
+      context: .
+      dockerfile: Dockerfile.payara
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: erpdb
+      DB_USER: erp
+      DB_PASSWORD: erp123
+      AUTH_PUBLIC_BASE_URL: http://localhost:9000
+      AUTH_INTERNAL_BASE_URL: http://auth-server:9000
+      APP_PUBLIC_BASE_URL: http://localhost:8080/erp-web-war
+      OAUTH_CLIENT_ID: erp-web-client
+      OAUTH_CLIENT_SECRET: erp-web-secret
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - auth-server
