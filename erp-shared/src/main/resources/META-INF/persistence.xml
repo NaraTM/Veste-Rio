@@ -1,0 +1,10 @@
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.1">
+    <persistence-unit name="erpPU" transaction-type="JTA">
+        <jta-data-source>jdbc/erpDS</jta-data-source>
+        <properties>
+            <property name="eclipselink.target-database" value="PostgreSQL"/>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.logging.level" value="WARNING"/>
+        </properties>
+    </persistence-unit>
+</persistence>
