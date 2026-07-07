@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: erp-config
+  namespace: erp-web-segura
+data:
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: erpdb
+  AUTH_PUBLIC_BASE_URL: http://auth-server:9000
+  AUTH_INTERNAL_BASE_URL: http://auth-server:9000
+  APP_PUBLIC_BASE_URL: http://erp-platform:8080
+  OAUTH_CLIENT_ID: erp-web-client
+  OAUTH_CLIENT_SECRET: erp-web-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: erp-secret
+  namespace: erp-web-segura
+type: Opaque
+stringData:
+  DB_USER: erp
+  DB_PASSWORD: erp123
+  POSTGRES_DB: erpdb
+  POSTGRES_USER: erp
+  POSTGRES_PASSWORD: erp123

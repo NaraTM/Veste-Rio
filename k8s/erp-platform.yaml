@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: erp-platform
+  namespace: erp-web-segura
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: erp-platform
+  template:
+    metadata:
+      labels:
+        app: erp-platform
+    spec:
+      containers:
+        - name: erp-platform
+          image: erp-platform:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: erp-config
+            - secretRef:
+                name: erp-secret
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: erp-platform
+  namespace: erp-web-segura
+spec:
+  selector:
+    app: erp-platform
+  ports:
+    - port: 8080
+      targetPort: 8080
