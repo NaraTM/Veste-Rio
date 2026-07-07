@@ -1,0 +1,39 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form>
+            <div class="page-panel">
+                <h3>Gestão de fornecedores</h3>
+                <p:panelGrid columns="2" layout="grid">
+                    <p:outputLabel value="Nome"/>
+                    <p:inputText value="#{suppliersView.form.name}" required="true"/>
+                    <p:outputLabel value="Contato"/>
+                    <p:inputText value="#{suppliersView.form.contactName}"/>
+                    <p:outputLabel value="Email"/>
+                    <p:inputText value="#{suppliersView.form.email}"/>
+                    <p:outputLabel value="Telefone"/>
+                    <p:inputText value="#{suppliersView.form.phone}"/>
+                    <p:outputLabel value="Ativo"/>
+                    <p:selectBooleanCheckbox value="#{suppliersView.form.active}"/>
+                </p:panelGrid>
+                <p:commandButton value="Salvar" action="#{suppliersView.save}" update="@form"/>
+                <p:commandButton value="Novo" action="#{suppliersView.reset}" update="@form" process="@this" immediate="true"/>
+            </div>
+            <div class="page-panel">
+                <p:dataTable value="#{suppliersView.suppliers}" var="item">
+                    <p:column headerText="Nome">#{item.name}</p:column>
+                    <p:column headerText="Contato">#{item.contactName}</p:column>
+                    <p:column headerText="Email">#{item.email}</p:column>
+                    <p:column headerText="Telefone">#{item.phone}</p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar" action="#{suppliersView.edit(item)}" update="@form" process="@this" immediate="true" rendered="#{suppliersView.hasRole('ADMIN')}"/>
+                        <p:commandButton value="Excluir" action="#{suppliersView.delete(item.id)}" update="@form" process="@this" immediate="true" rendered="#{suppliersView.hasRole('ADMIN')}"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,111 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <div class="page-panel">
+            <h3>Relatórios financeiros e dashboard</h3>
+            <p:dataTable value="#{reportsView.monthlySales}" var="item">
+                <p:column headerText="Mês">#{item.referenceMonth}</p:column>
+                <p:column headerText="Vendas">
+                    <h:outputText value="#{item.amount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="page-panel">
+            <p:dataTable value="#{reportsView.monthlyPurchases}" var="item">
+                <p:column headerText="Mês">#{item.referenceMonth}</p:column>
+                <p:column headerText="Compras">
+                    <h:outputText value="#{item.amount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="page-panel">
+            <p:dataTable value="#{reportsView.paymentSummary}" var="item">
+                <p:column headerText="Método">#{reportsView.describePaymentMethod(item.method)}</p:column>
+                <p:column headerText="Valor">
+                    <h:outputText value="#{item.amount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="page-panel">
+            <h3>Itens vendidos</h3>
+            <p:dataTable value="#{reportsView.soldItems}" var="item">
+                <p:column headerText="Venda">#{item.documentId}</p:column>
+                <p:column headerText="Data">#{item.referenceDate}</p:column>
+                <p:column headerText="Vendedor">#{item.partnerName}</p:column>
+                <p:column headerText="SKU">#{item.sku}</p:column>
+                <p:column headerText="Produto">#{item.productName}</p:column>
+                <p:column headerText="Quantidade">
+                    <h:outputText value="#{item.quantity}">
+                        <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Preço unitário">
+                    <h:outputText value="#{item.unitAmount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Subtotal">
+                    <h:outputText value="#{item.totalAmount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="page-panel">
+            <h3>Itens comprados</h3>
+            <p:dataTable value="#{reportsView.purchasedItems}" var="item">
+                <p:column headerText="Compra">#{item.documentId}</p:column>
+                <p:column headerText="Data">#{item.referenceDate}</p:column>
+                <p:column headerText="Fornecedor">#{item.partnerName}</p:column>
+                <p:column headerText="SKU">#{item.sku}</p:column>
+                <p:column headerText="Produto">#{item.productName}</p:column>
+                <p:column headerText="Quantidade">
+                    <h:outputText value="#{item.quantity}">
+                        <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Custo unitário">
+                    <h:outputText value="#{item.unitAmount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Subtotal">
+                    <h:outputText value="#{item.totalAmount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="page-panel">
+            <p:dataTable value="#{reportsView.lowStock}" var="item">
+                <p:column headerText="SKU">#{item.sku}</p:column>
+                <p:column headerText="Produto">#{item.productName}</p:column>
+                <p:column headerText="Estoque">
+                    <h:outputText value="#{item.stock}">
+                        <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Mínimo">
+                    <h:outputText value="#{item.minStock}">
+                        <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Preço">
+                    <h:outputText value="#{item.unitPrice}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </ui:define>
+</ui:composition>

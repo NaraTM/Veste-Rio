@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>VesteRio</title>
+    <h:outputStylesheet library="app" name="css/app.css"/>
+</h:head>
+<h:body>
+    <div class="layout">
+        <p:growl id="growl" showDetail="true" autoUpdate="true"/>
+        <div class="page-panel">
+            <h2>VesteRio</h2>
+            <div>Usuário: #{sessionContext.fullName}</div>
+            <p:menubar>
+                <p:menuitem value="Dashboard" outcome="/app/dashboard.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER')}"/>
+                <p:menuitem value="Usuários" outcome="/app/users.xhtml" rendered="#{sessionContext.hasRole('ADMIN')}"/>
+                <p:menuitem value="Estoque" outcome="/app/products.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER')}"/>
+                <p:menuitem value="Fornecedores" outcome="/app/suppliers.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER')}"/>
+                <p:menuitem value="Compras" outcome="/app/purchases.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER')}"/>
+                <p:menuitem value="Vendas" outcome="/app/sales.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER') or sessionContext.hasRole('SELLER')}"/>
+                <p:menuitem value="Pagamentos" outcome="/app/payments.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER')}"/>
+                <p:menuitem value="Relatórios" outcome="/app/reports.xhtml" rendered="#{sessionContext.hasRole('ADMIN') or sessionContext.hasRole('MANAGER')}"/>
+                <p:menuitem value="Sair" url="#{request.contextPath}/logout"/>
+            </p:menubar>
+        </div>
+        <ui:insert name="content"/>
+    </div>
+</h:body>
+</html>

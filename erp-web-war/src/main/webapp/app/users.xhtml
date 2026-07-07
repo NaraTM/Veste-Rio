@@ -1,0 +1,44 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <h:form>
+            <div class="page-panel">
+                <h3>Gestão de usuários e perfis</h3>
+                <p:panelGrid columns="2" layout="grid">
+                    <p:outputLabel value="Username"/>
+                    <p:inputText value="#{usersView.form.username}" required="true"/>
+                    <p:outputLabel value="Nome"/>
+                    <p:inputText value="#{usersView.form.fullName}" required="true"/>
+                    <p:outputLabel value="Email"/>
+                    <p:inputText value="#{usersView.form.email}" required="true"/>
+                    <p:outputLabel value="Senha"/>
+                    <p:password value="#{usersView.rawPassword}" feedback="false"/>
+                    <p:outputLabel value="Perfis"/>
+                    <p:selectManyCheckbox value="#{usersView.selectedRoles}">
+                        <f:selectItems value="#{usersView.availableRoles}"/>
+                    </p:selectManyCheckbox>
+                    <p:outputLabel value="Ativo"/>
+                    <p:selectBooleanCheckbox value="#{usersView.form.active}"/>
+                </p:panelGrid>
+                <p:commandButton value="Salvar" action="#{usersView.save}" update="@form"/>
+                <p:commandButton value="Novo" action="#{usersView.reset}" update="@form" process="@this" immediate="true"/>
+            </div>
+            <div class="page-panel">
+                <p:dataTable value="#{usersView.users}" var="item">
+                    <p:column headerText="Username">#{item.username}</p:column>
+                    <p:column headerText="Nome">#{item.fullName}</p:column>
+                    <p:column headerText="Email">#{item.email}</p:column>
+                    <p:column headerText="Ativo">#{item.active}</p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar" action="#{usersView.edit(item)}" update="@form" process="@this" immediate="true"/>
+                        <p:commandButton value="Excluir" action="#{usersView.delete(item.id)}" update="@form" process="@this" immediate="true"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

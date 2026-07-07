@@ -1,0 +1,69 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <h:form id="purchaseForm">
+            <div class="page-panel">
+                <h3>Gestão de compras</h3>
+                <p:panelGrid columns="2" layout="grid">
+                    <p:outputLabel value="Fornecedor"/>
+                    <p:selectOneMenu value="#{purchasesView.supplierId}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{purchasesView.suppliers}" var="item" itemValue="#{item.id}" itemLabel="#{item.name}"/>
+                        <p:ajax listener="#{purchasesView.onSupplierChange}" update="itemsTable summaryPanel purchasesTable" process="@this"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Data"/>
+                    <p:datePicker value="#{purchasesView.purchaseDate}" pattern="yyyy-MM-dd"/>
+                </p:panelGrid>
+                <p:dataTable id="itemsTable" value="#{purchasesView.rows}" var="row">
+                    <p:column headerText="Produto">
+                        <p:selectOneMenu value="#{row.productId}" disabled="#{empty purchasesView.supplierId}">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{purchasesView.availableProducts}" var="item" itemValue="#{item.id}" itemLabel="#{purchasesView.describeProduct(item)}"/>
+                            <p:ajax listener="#{purchasesView.onProductChange(row)}" update="itemsTable summaryPanel" process="@this"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                    <p:column headerText="Quantidade">
+                        <p:inputNumber value="#{row.quantity}" decimalPlaces="0" minValue="1">
+                            <p:ajax update="itemsTable summaryPanel" process="@this"/>
+                        </p:inputNumber>
+                    </p:column>
+                    <p:column headerText="Preço unitário">
+                        <h:outputText value="#{row.unitCost}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total">
+                        <h:outputText value="#{purchasesView.calculateRowTotal(row)}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+                <p:panelGrid id="summaryPanel" columns="2" layout="grid">
+                    <p:outputLabel value="Total da compra"/>
+                    <h:outputText value="#{purchasesView.grandTotal}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:panelGrid>
+                <p:commandButton value="Adicionar item" action="#{purchasesView.addRow}" process="@this" update="itemsTable summaryPanel"/>
+                <p:commandButton value="Registrar compra" action="#{purchasesView.save}" update="@form"/>
+            </div>
+            <div class="page-panel">
+                <p:dataTable id="purchasesTable" value="#{purchasesView.purchases}" var="item">
+                    <p:column headerText="ID">#{item.id}</p:column>
+                    <p:column headerText="Fornecedor">#{item.supplier.name}</p:column>
+                    <p:column headerText="Data">#{item.purchaseDate}</p:column>
+                    <p:column headerText="Status">#{purchasesView.describePurchaseStatus(item.status)}</p:column>
+                    <p:column headerText="Total">
+                        <h:outputText value="#{item.totalValue}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

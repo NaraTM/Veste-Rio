@@ -1,0 +1,180 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <h:form id="stockForm">
+            <div class="page-panel">
+                <h3>Gestão de estoque</h3>
+                <p:panelGrid id="stockGrid" columns="2" layout="grid">
+                    <p:outputLabel value="Fornecedor"/>
+                    <p:selectOneMenu value="#{productsView.form.supplier.id}" required="true">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.suppliers}" var="item" itemValue="#{item.id}" itemLabel="#{item.name}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="SKU"/>
+                    <p:inputText value="#{productsView.form.sku}" required="true"/>
+                    <p:outputLabel value="Nome"/>
+                    <p:inputText value="#{productsView.form.name}" required="true"/>
+                    <p:outputLabel value="Descrição"/>
+                    <p:inputTextarea value="#{productsView.form.description}"/>
+                    <p:outputLabel value="Grupo"/>
+                    <p:selectOneMenu id="group" value="#{productsView.form.category}" required="true">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.groupOptions}"/>
+                        <p:ajax listener="#{productsView.onGroupChange}" update="productType sizeLabel sizeLabelCaption iconPreview" process="@this"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Tipo"/>
+                    <p:selectOneMenu id="productType" value="#{productsView.form.productType}" required="true" disabled="#{empty productsView.form.category}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.productTypeOptions}"/>
+                        <p:ajax listener="#{productsView.onProductTypeChange}" update="sizeLabel sizeLabelCaption iconPreview" process="@this"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Público"/>
+                    <p:selectOneMenu value="#{productsView.form.targetAudience}" required="true">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.targetAudienceOptions}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Cor"/>
+                    <p:selectOneMenu value="#{productsView.form.colorName}" required="true">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.colorOptions}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel id="sizeLabelCaption" value="#{productsView.sizeFieldLabel}"/>
+                    <p:selectOneMenu id="sizeLabel" value="#{productsView.form.sizeLabel}" required="true" disabled="#{empty productsView.form.productType}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.sizeOptions}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Ícone"/>
+                    <h:outputText id="iconPreview" value="#{productsView.form.iconName}"/>
+                    <p:outputLabel value="Preço"/>
+                    <p:inputNumber value="#{productsView.form.unitPrice}" decimalPlaces="2" symbol="$ " symbolPosition="p" minValue="0"/>
+                    <p:outputLabel value="Estoque"/>
+                    <p:inputNumber value="#{productsView.form.stockQuantity}" decimalPlaces="0" minValue="0"/>
+                    <p:outputLabel value="Estoque mínimo"/>
+                    <p:inputNumber value="#{productsView.form.minStock}" decimalPlaces="0" minValue="0"/>
+                    <p:outputLabel value="Ativo"/>
+                    <p:selectBooleanCheckbox value="#{productsView.form.active}"/>
+                </p:panelGrid>
+                <p:commandButton value="Salvar" action="#{productsView.save}" process="stockGrid @this" update=":stockForm :productsTableForm :movementsForm :couponTableForm"/>
+                <p:commandButton value="Novo" action="#{productsView.reset}" process="@this" immediate="true" update=":stockForm"/>
+            </div>
+        </h:form>
+
+        <h:form id="adjustmentForm">
+            <div class="page-panel">
+                <h3>Ajuste de estoque</h3>
+                <p:panelGrid id="adjustmentGrid" columns="2" layout="grid">
+                    <p:outputLabel value="Item"/>
+                    <p:selectOneMenu value="#{productsView.adjustmentProductId}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{productsView.products}" var="item" itemValue="#{item.id}" itemLabel="#{productsView.describeProduct(item)}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Quantidade"/>
+                    <p:inputNumber value="#{productsView.adjustmentQuantity}" decimalPlaces="0" minValue="1"/>
+                    <p:outputLabel value="Tipo"/>
+                    <p:selectOneMenu value="#{productsView.adjustmentType}">
+                        <f:selectItems value="#{productsView.movementTypes}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Observação"/>
+                    <p:inputText value="#{productsView.adjustmentNote}"/>
+                </p:panelGrid>
+                <p:commandButton value="Aplicar" action="#{productsView.adjust}" process="adjustmentGrid @this" update=":adjustmentForm :stockForm :productsTableForm :movementsForm"/>
+            </div>
+        </h:form>
+
+        <h:form id="couponFormPanel">
+            <div class="page-panel">
+                <h3>Cupons de desconto</h3>
+                <p:panelGrid id="couponGrid" columns="2" layout="grid">
+                    <p:outputLabel value="Código"/>
+                    <p:inputText value="#{productsView.couponForm.code}" required="true"/>
+                    <p:outputLabel value="Descrição"/>
+                    <p:inputText value="#{productsView.couponForm.description}"/>
+                    <p:outputLabel value="Desconto (%)"/>
+                    <p:inputNumber value="#{productsView.couponForm.discountPercent}" decimalPlaces="2" symbol="%" symbolPosition="s" minValue="0" maxValue="100"/>
+                    <p:outputLabel value="Válido até"/>
+                    <p:datePicker value="#{productsView.couponForm.validUntil}" pattern="yyyy-MM-dd"/>
+                    <p:outputLabel value="Ativo"/>
+                    <p:selectBooleanCheckbox value="#{productsView.couponForm.active}"/>
+                </p:panelGrid>
+                <p:commandButton value="Salvar cupom" action="#{productsView.saveCoupon}" process="couponGrid @this" update=":couponFormPanel :couponTableForm" rendered="#{productsView.canManageCoupons()}"/>
+                <p:commandButton value="Novo cupom" action="#{productsView.resetCouponForm}" process="@this" immediate="true" update=":couponFormPanel" rendered="#{productsView.canManageCoupons()}"/>
+            </div>
+        </h:form>
+
+        <h:form id="productsTableForm">
+            <div class="page-panel">
+                <p:dataTable value="#{productsView.products}" var="item">
+                    <p:column headerText="Ícone">#{item.iconName}</p:column>
+                    <p:column headerText="Fornecedor">#{productsView.describeSupplier(item.supplier)}</p:column>
+                    <p:column headerText="SKU">#{item.sku}</p:column>
+                    <p:column headerText="Nome">#{item.name}</p:column>
+                    <p:column headerText="Grupo">#{productsView.describeGroup(item.category)}</p:column>
+                    <p:column headerText="Tipo">#{productsView.describeType(item.productType)}</p:column>
+                    <p:column headerText="Cor">#{productsView.describeColor(item.colorName)}</p:column>
+                    <p:column headerText="Público">#{productsView.describeAudience(item.targetAudience)}</p:column>
+                    <p:column headerText="Tamanho">#{item.sizeLabel}</p:column>
+                    <p:column headerText="Preço">
+                        <h:outputText value="#{item.unitPrice}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Estoque">
+                        <h:outputText value="#{item.stockQuantity}">
+                            <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Mínimo">
+                        <h:outputText value="#{item.minStock}">
+                            <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar" action="#{productsView.edit(item)}" process="@this" immediate="true" update=":stockForm" rendered="#{productsView.hasRole('ADMIN')}"/>
+                        <p:commandButton value="Excluir" action="#{productsView.delete(item.id)}" process="@this" immediate="true" update=":stockForm :productsTableForm :movementsForm" rendered="#{productsView.hasRole('ADMIN')}"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+
+        <h:form id="couponTableForm">
+            <div class="page-panel">
+                <p:dataTable value="#{productsView.coupons}" var="item">
+                    <p:column headerText="Código">#{item.code}</p:column>
+                    <p:column headerText="Descrição">#{item.description}</p:column>
+                    <p:column headerText="Desconto (%)">
+                        <h:outputText value="#{item.discountPercent}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Validade">#{item.validUntil}</p:column>
+                    <p:column headerText="Status">#{productsView.describeCouponStatus(item)}</p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar" action="#{productsView.editCoupon(item)}" process="@this" immediate="true" update=":couponFormPanel" rendered="#{productsView.canManageCoupons()}"/>
+                        <p:commandButton value="Excluir" action="#{productsView.deleteCoupon(item.id)}" process="@this" immediate="true" update=":couponFormPanel :couponTableForm" rendered="#{productsView.canManageCoupons()}"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+
+        <h:form id="movementsForm">
+            <div class="page-panel">
+                <p:dataTable value="#{productsView.movements}" var="item">
+                    <p:column headerText="Item">#{productsView.describeProduct(item.product)}</p:column>
+                    <p:column headerText="Fornecedor">#{productsView.describeSupplier(item.product.supplier)}</p:column>
+                    <p:column headerText="Tipo">#{item.type}</p:column>
+                    <p:column headerText="Quantidade">
+                        <h:outputText value="#{item.quantity}">
+                            <f:convertNumber maxFractionDigits="0" minFractionDigits="0"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Referência">#{item.referenceType}</p:column>
+                    <p:column headerText="Observação">#{item.note}</p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

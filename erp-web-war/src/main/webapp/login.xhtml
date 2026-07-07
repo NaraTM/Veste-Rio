@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html">
+<h:head>
+    <title>Redirecionando</title>
+    <meta http-equiv="refresh" content="0;url=#{request.contextPath}/login"/>
+    <script type="text/javascript">
+        window.location.replace('#{request.contextPath}/login');
+    </script>
+</h:head>
+<h:body>
+</h:body>
+</html>

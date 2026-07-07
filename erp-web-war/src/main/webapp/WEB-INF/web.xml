@@ -1,0 +1,6 @@
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" version="6.0">
+    <display-name>VesteRio</display-name>
+    <welcome-file-list>
+        <welcome-file>login.xhtml</welcome-file>
+    </welcome-file-list>
+</web-app>

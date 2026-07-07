@@ -1,0 +1,96 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <h:form id="salesForm">
+            <div class="page-panel">
+                <h3>Gestão de vendas</h3>
+                <p:panelGrid columns="2" layout="grid">
+                    <p:outputLabel value="Data"/>
+                    <p:datePicker value="#{salesView.saleDate}" pattern="yyyy-MM-dd"/>
+                    <p:outputLabel value="Pagamento"/>
+                    <p:selectOneMenu value="#{salesView.paymentMethod}">
+                        <f:selectItems value="#{salesView.paymentMethodOptions}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Cupom"/>
+                    <p:selectOneMenu value="#{salesView.couponCode}">
+                        <f:selectItem itemLabel="Sem cupom" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{salesView.couponOptions}"/>
+                        <p:ajax listener="#{salesView.onCouponChange}" update="summaryPanel" process="@this"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Desconto (%)"/>
+                    <p:inputNumber value="#{salesView.discountPercent}" decimalPlaces="2" symbol="%" symbolPosition="s" minValue="0" maxValue="100" disabled="#{not salesView.canManageDiscount() or not empty salesView.couponCode}">
+                        <p:ajax update="summaryPanel" process="@this"/>
+                    </p:inputNumber>
+                </p:panelGrid>
+                <p:dataTable id="itemsTable" value="#{salesView.rows}" var="row">
+                    <p:column headerText="Produto">
+                        <p:selectOneMenu value="#{row.productId}">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{salesView.products}" var="item" itemValue="#{item.id}" itemLabel="#{salesView.describeProduct(item)}"/>
+                            <p:ajax listener="#{salesView.onProductChange(row)}" update="itemsTable summaryPanel" process="@this"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                    <p:column headerText="Quantidade">
+                        <p:inputNumber value="#{row.quantity}" decimalPlaces="0" minValue="1">
+                            <p:ajax update="itemsTable summaryPanel" process="@this"/>
+                        </p:inputNumber>
+                    </p:column>
+                    <p:column headerText="Preço unitário">
+                        <h:outputText value="#{row.unitPrice}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Preço">
+                        <h:outputText value="#{salesView.calculateRowTotal(row)}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+                <p:panelGrid id="summaryPanel" columns="2" layout="grid">
+                    <p:outputLabel value="Subtotal"/>
+                    <h:outputText value="#{salesView.grossTotal}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                    <p:outputLabel value="Desconto"/>
+                    <h:outputText value="#{salesView.discountAmount}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                    <p:outputLabel value="Total final"/>
+                    <h:outputText value="#{salesView.netTotal}">
+                        <f:convertNumber type="currency" currencySymbol="$ "/>
+                    </h:outputText>
+                </p:panelGrid>
+                <p:commandButton value="Adicionar item" action="#{salesView.addRow}" process="@this" update="itemsTable summaryPanel"/>
+                <p:commandButton value="Registrar venda" action="#{salesView.save}" update="@form"/>
+            </div>
+            <div class="page-panel" rendered="#{salesView.canViewHistory()}">
+                <p:dataTable value="#{salesView.sales}" var="item">
+                    <p:column headerText="ID">#{item.id}</p:column>
+                    <p:column headerText="Vendedor">#{item.seller.fullName}</p:column>
+                    <p:column headerText="Data">#{item.saleDate}</p:column>
+                    <p:column headerText="Status">#{salesView.describeSaleStatus(item.status)}</p:column>
+                    <p:column headerText="Cupom">#{item.couponCode}</p:column>
+                    <p:column headerText="Desconto (%)">
+                        <h:outputText value="#{item.discountPercent}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Desconto">
+                        <h:outputText value="#{item.discountValue}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total">
+                        <h:outputText value="#{item.totalValue}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

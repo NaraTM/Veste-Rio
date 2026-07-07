@@ -1,0 +1,32 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <h:form>
+            <div class="page-panel">
+                <h3>Gestão de pagamentos</h3>
+                <p:dataTable value="#{paymentsView.payments}" var="item">
+                    <p:column headerText="ID">#{item.id}</p:column>
+                    <p:column headerText="Venda">#{item.sale.id}</p:column>
+                    <p:column headerText="Método">#{paymentsView.describePaymentMethod(item.method)}</p:column>
+                    <p:column headerText="Valor">
+                        <h:outputText value="#{item.amount}">
+                            <f:convertNumber type="currency" currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Status">#{paymentsView.describePaymentStatus(item.status)}</p:column>
+                    <p:column headerText="Data">#{item.paymentDate}</p:column>
+                    <p:column headerText="Atualizar">
+                        <p:selectOneMenu value="#{item.status}">
+                            <f:selectItems value="#{paymentsView.statusOptions}"/>
+                            <p:ajax listener="#{paymentsView.update(item.id, item.status)}" update="@form"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

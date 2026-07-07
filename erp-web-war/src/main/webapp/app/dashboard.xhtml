@@ -1,0 +1,17 @@
+<ui:composition template="/WEB-INF/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <div class="card-grid">
+            <div class="metric-card"><div class="metric-title">Usuários</div><div class="metric-value">#{dashboardView.metrics.totalUsers}</div></div>
+            <div class="metric-card"><div class="metric-title">Produtos</div><div class="metric-value">#{dashboardView.metrics.totalProducts}</div></div>
+            <div class="metric-card"><div class="metric-title">Baixo estoque</div><div class="metric-value">#{dashboardView.metrics.lowStockProducts}</div></div>
+            <div class="metric-card"><div class="metric-title">Vendas</div><div class="metric-value"><h:outputText value="#{dashboardView.metrics.salesTotal}"><f:convertNumber type="currency" currencySymbol="$ "/></h:outputText></div></div>
+            <div class="metric-card"><div class="metric-title">Compras</div><div class="metric-value"><h:outputText value="#{dashboardView.metrics.purchasesTotal}"><f:convertNumber type="currency" currencySymbol="$ "/></h:outputText></div></div>
+            <div class="metric-card"><div class="metric-title">Pagamentos em aberto</div><div class="metric-value">#{dashboardView.metrics.openPayments}</div></div>
+        </div>
+    </ui:define>
+</ui:composition>
